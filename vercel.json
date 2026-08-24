@@ -1,0 +1,108 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/alumni.py", "use": "@vercel/python" },
+    { "src": "api/alumni_profile.py", "use": "@vercel/python" },
+    { "src": "api/auth_complete_signup.py", "use": "@vercel/python" },
+    { "src": "api/chat_message.py", "use": "@vercel/python" },
+    { "src": "api/dashboard_stats.py", "use": "@vercel/python" },
+    { "src": "api/impact_stats.py", "use": "@vercel/python" },
+    { "src": "api/jobs.py", "use": "@vercel/python" },
+    { "src": "api/matchmaker_run.py", "use": "@vercel/python" },
+    { "src": "api/mentorship_request.py", "use": "@vercel/python" },
+    { "src": "api/profile_me.py", "use": "@vercel/python" },
+    { "src": "api/roadmap.py", "use": "@vercel/python" },
+    { "src": "api/students.py", "use": "@vercel/python" },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "images/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "css/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "js/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/auth-complete-signup",
+      "dest": "/api/auth_complete_signup.py"
+    },
+    {
+      "src": "/api/alumni-profile",
+      "dest": "/api/alumni_profile.py"
+    },
+    {
+      "src": "/api/alumni",
+      "dest": "/api/alumni.py"
+    },
+    {
+      "src": "/api/students",
+      "dest": "/api/students.py"
+    },
+    {
+      "src": "/api/jobs",
+      "dest": "/api/jobs.py"
+    },
+    {
+      "src": "/api/matchmaker-run",
+      "dest": "/api/matchmaker_run.py"
+    },
+    {
+      "src": "/api/chat-message",
+      "dest": "/api/chat_message.py"
+    },
+    {
+      "src": "/api/chat-history",
+      "dest": "/api/chat_message.py"
+    },
+    {
+      "src": "/api/roadmap-generate",
+      "dest": "/api/roadmap.py"
+    },
+    {
+      "src": "/api/roadmap-progress",
+      "dest": "/api/roadmap.py"
+    },
+    {
+      "src": "/api/mentorship-request",
+      "dest": "/api/mentorship_request.py"
+    },
+    {
+      "src": "/api/mentorship-requests",
+      "dest": "/api/mentorship_request.py"
+    },
+    {
+      "src": "/api/profile-me",
+      "dest": "/api/profile_me.py"
+    },
+    {
+      "src": "/api/dashboard-stats",
+      "dest": "/api/dashboard_stats.py"
+    },
+    {
+      "src": "/api/impact-stats",
+      "dest": "/api/impact_stats.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "SUPABASE_URL": "@supabase_url",
+    "SUPABASE_ANON_KEY": "@supabase_anon_key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "HF_API_TOKEN": "@hf_api_token",
+    "HF_MODEL": "@hf_model",
+    "COLLEGE_NAME": "Karpagam Institute of Technology",
+    "ALLOWED_STUDENT_EMAIL_DOMAIN": "@kite.ac.in"
+  }
+}

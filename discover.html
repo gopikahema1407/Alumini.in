@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover - AlumniX</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .discover-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-header {
+            margin-bottom: 30px;
+        }
+        .search-bar-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .search-filter {
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        .search-filter:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .results-section {
+            margin-bottom: 40px;
+        }
+        .results-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .user-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .user-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid #667eea;
+        }
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .user-info {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .user-bio {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            min-height: 50px;
+        }
+        .user-links {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .user-link-btn {
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #667eea;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .user-link-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-action {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-action:hover {
+            background: #667eea;
+            color: white;
+        }
+        .btn-action.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .btn-action.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .post-card-mini {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        .post-card-mini h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .post-card-mini p {
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .post-by {
+            color: #999;
+            font-size: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .post-by:hover {
+            color: #667eea;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .filter-chip {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-chip:hover {
+            background: #667eea;
+            color: white;
+        }
+        .filter-chip.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="discover-container">
+        <div class="search-header">
+            <h1>🔍 Discover</h1>
+            <p style="color: #999; margin: 10px 0;">Find alumni, students, and opportunities</p>
+
+            <div class="search-bar-container">
+                <input type="text" class="search-input" id="searchInput" 
+                       placeholder="Search for users, posts, opportunities..." 
+                       onkeyup="handleSearch()">
+                <select class="search-filter" id="searchType" onchange="performSearch()">
+                    <option value="all">All</option>
+                    <option value="users">👥 Users</option>
+                    <option value="posts">📝 Posts</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="searchResults">
+            <div class="empty-state">
+                <h3>👋 Welcome to Discover</h3>
+                <p>Search for users or posts to get started</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+
+    <script>
+        let searchTimeout;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for search query in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            if (query) {
+                document.getElementById('searchInput').value = query;
+                performSearch();
+            }
+        });
+
+        function handleSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch();
+            }, 500);
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const type = document.getElementById('searchType').value;
+
+            if (!query) {
+                document.getElementById('searchResults').innerHTML = `
+                    <div class="empty-state">
+                        <h3>👋 Welcome to Discover</h3>
+                        <p>Search for users or posts to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('searchResults').innerHTML = '<div class="loading">🔄 Searching...</div>';
+
+            try {
+                const response = await window.apiClient.get('/api/discover', {
+                    q: query,
+                    type: type,
+                    limit: 50
+                });
+
+                if (response.success) {
+                    displayResults(response, type);
+                } else {
+                    document.getElementById('searchResults').innerHTML = `
+                        <div class="empty-state">
+                            <p>❌ ${response.error || 'Error searching'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('searchResults').innerHTML = `
+                    <div class="empty-state">
+                        <p>❌ Error searching: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayResults(response, type) {
+            let html = '';
+            let hasResults = false;
+
+            // Display users
+            if ((type === 'all' || type === 'users') && response.users && response.users.length > 0) {
+                hasResults = true;
+                html += '<div class="results-section">';
+                html += '<div class="results-header">👥 Users (' + response.users.length + ')</div>';
+                html += '<div class="results-grid">';
+
+                html += response.users.map(user => `
+                    <div class="user-card">
+                        <img src="${user.profile_picture_url || 'images/logo.png'}" 
+                             class="user-avatar" 
+                             onerror="this.src='images/logo.png'" />
+                        <div class="user-name">${user.full_name}</div>
+                        <div class="user-info">${user.department || 'Member'}</div>
+                        <div class="user-bio">${user.bio || 'No bio yet'}</div>
+                        
+                        <div class="user-links">
+                            ${user.linkedin_url ? `<a href="${user.linkedin_url}" target="_blank" class="user-link-btn">LinkedIn</a>` : ''}
+                            ${user.github_url ? `<a href="${user.github_url}" target="_blank" class="user-link-btn">GitHub</a>` : ''}
+                        </div>
+
+                        <div class="card-actions">
+                            <button class="btn-action" onclick="viewUserProfile('${user.id}')">👤 View</button>
+                            <button class="btn-action primary" onclick="messageUser('${user.id}', '${user.full_name.replace(/'/g, "\\'")}')">💬 Message</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                html += '</div></div>';
+            }
+
+            // Display posts
+            if ((type === 'all' || type === 'posts') && response.posts && response.posts.length > 0) {
+                hasResults = true;
+                html += '<div class="results-section">';
+                html += '<div class="results-header">📝 Posts (' + response.posts.length + ')</div>';
+
+                html += response.posts.map(post => {
+                    const author = post.author || { full_name: 'Anonymous', id: null };
+                    const postTypeName = getPostTypeName(post.type);
+                    
+                    return `
+                        <div class="post-card-mini">
+                            <span class="post-type-badge" style="display: inline-block; padding: 4px 12px; background: #667eea; color: white; border-radius: 20px; font-size: 12px; margin-bottom: 10px;">
+                                ${postTypeName}
+                            </span>
+                            <h4>${post.title}</h4>
+                            <p>${post.description.substring(0, 150)}...</p>
+                            <div class="post-by" onclick="viewUserProfile('${post.user_id}')">
+                                👤 by ${author.full_name}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                html += '</div>';
+            }
+
+            if (!hasResults) {
+                html = `
+                    <div class="empty-state">
+                        <h3>😔 No results found</h3>
+                        <p>Try searching with different keywords</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('searchResults').innerHTML = html;
+        }
+
+        function getPostTypeName(type) {
+            const types = {
+                'announcement': '📢 Announcement',
+                'certificate': '🏆 Achievement',
+                'job_opening': '💼 Job',
+                'career_update': '📈 Career'
+            };
+            return types[type] || '📝 Post';
+        }
+
+        function viewUserProfile(userId) {
+            window.location.href = `view-profile.html?id=${userId}`;
+        }
+
+        function messageUser(userId, userName) {
+            window.location.href = `messages.html?user=${userId}`;
+        }
+    </script>
+</body>
+</html>

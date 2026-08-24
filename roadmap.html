@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Roadmap — KIT Alumni Network</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    
+    .roadmap-page {
+      background: var(--bg-page);
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+
+    .roadmap-wrapper {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 60px);
+      max-width: 100%;
+    }
+
+    /* Sidebar */
+    .roadmap-sidebar {
+      background: var(--surface-card);
+      border-right: 1px solid var(--border-default);
+      padding: 20px;
+      overflow-y: auto;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+    }
+
+    .sidebar-section {
+      margin-bottom: 24px;
+    }
+
+    .sidebar-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 2px var(--primary-light-tint);
+    }
+
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 10;
+      display: none;
+      box-shadow: var(--shadow-card);
+    }
+
+    .search-suggestions.show {
+      display: block;
+    }
+
+    .search-suggestion {
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .search-suggestion:hover {
+      background: var(--bg-page);
+      color: var(--text-primary);
+    }
+
+    .filter-group {
+      margin-bottom: 16px;
+    }
+
+    .filter-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .filter-select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: var(--surface-card);
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary-green);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-action {
+      padding: 10px 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn-generate {
+      background: var(--primary-green);
+      color: white;
+    }
+
+    .btn-generate:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-generate:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-export {
+      background: var(--surface-card);
+      color: var(--primary-green);
+      border: 2px solid var(--primary-green);
+    }
+
+    .btn-export:hover {
+      background: var(--primary-light-tint);
+    }
+
+    /* Main Content */
+    .roadmap-content {
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    .roadmap-header {
+      margin-bottom: 32px;
+    }
+
+    .domain-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .resource-links {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .resource-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: var(--primary-light-tint);
+      color: var(--primary-green);
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .resource-link:hover {
+      background: var(--primary-green);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .roadmap-content.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .empty-state {
+      font-size: 1.2rem;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .years-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .year-section {
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .year-header {
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-hover) 100%);
+      color: white;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .year-header:hover {
+      opacity: 0.95;
+    }
+
+    .year-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .year-progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+
+    .progress-text {
+      opacity: 0.9;
+    }
+
+    .progress-bar {
+      width: 150px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      transition: width 0.4s ease;
+    }
+
+    .year-header .toggle-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .year-section.collapsed .year-header .toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .year-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .year-section.collapsed .year-content {
+      display: none;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-page);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .task-item:hover {
+      background: #f0f8f4;
+    }
+
+    .task-item.completed {
+      opacity: 0.6;
+    }
+
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: var(--primary-green);
+      flex-shrink: 0;
+    }
+
+    .task-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .task-item.completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .task-btn {
+      padding: 4px 10px;
+      background: none;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .task-btn:hover {
+      border-color: var(--primary-green);
+      color: var(--primary-green);
+      background: var(--primary-light-tint);
+    }
+
+    .monthly-plan {
+      background: linear-gradient(to right, rgba(76,175,80,0.05), transparent);
+      border-left: 3px solid var(--primary-green);
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: var(--radius-md);
+      display: none;
+      font-size: 0.85rem;
+    }
+
+    .monthly-plan.show {
+      display: block;
+    }
+
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .month-card {
+      background: white;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      font-size: 0.8rem;
+    }
+
+    .month-title {
+      font-weight: 600;
+      color: var(--primary-green);
+      margin-bottom: 6px;
+    }
+
+    .month-tasks {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      color: var(--text-secondary);
+    }
+
+    .month-tasks li {
+      padding: 2px 0;
+      font-size: 0.75rem;
+    }
+
+    .time-estimate {
+      background: linear-gradient(135deg, var(--primary-light-tint), transparent);
+      border-left: 4px solid var(--primary-green);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 1024px) {
+      .roadmap-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .roadmap-sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-default);
+      }
+
+      .roadmap-content {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .roadmap-content {
+        padding: 16px;
+      }
+
+      .domain-title {
+        font-size: 1.5rem;
+      }
+
+      .resource-links {
+        flex-wrap: wrap;
+      }
+
+      .years-container {
+        gap: 12px;
+      }
+
+      .months-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body style="background-color: var(--bg-page); margin: 0;">
+
+  <!-- Header -->
+  <div id="top-header-container"></div>
+
+  <!-- Sidebar -->
+  <div id="sidebar-container"></div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu-container"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="roadmap-wrapper">
+      
+      <!-- Left Sidebar -->
+      <aside class="roadmap-sidebar">
+        
+        <!-- Search Section -->
+        <div class="sidebar-section">
+          <div class="sidebar-title">Search Careers</div>
+          <div class="search-box">
+            <input type="text" class="search-input" id="search-input" placeholder="Search domains..." autocomplete="off" />
+            <div class="search-suggestions" id="search-suggestions"></div>
+          </div>
+        </div>
+
+        <!-- Year Filter -->
+        <div class="sidebar-section">
+          <div class="sidebar-title">Filter by Year</div>
+          <select class="filter-select" id="year-filter" onchange="filterByYear()">
+            <option value="0">All Years</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="sidebar-section">
+          <div class="action-buttons">
+            <button class="btn-action btn-generate" id="generate-btn" onclick="generateRoadmap()">
+              🗺️ Generate Roadmap
+            </button>
+            <button class="btn-action btn-export" onclick="exportToPDF()">
+              📄 Download PDF
+            </button>
+            <button class="btn-action btn-export" onclick="exportToWord()">
+              📊 Download Word
+            </button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Main Content Area -->
+      <div class="roadmap-content empty" id="roadmap-content">
+        <div class="empty-state">
+          <div class="empty-icon">🗺️</div>
+          <div>Search or select a career to view your roadmap</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/role-shell.js"></script>
+  <script src="js/roadmap-data.js"></script>
+  <script src="js/monthly-plans-data.js"></script>
+  <script src="js/roadmap.js"></script>
+</body>
+</html>

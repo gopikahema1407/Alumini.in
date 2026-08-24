@@ -1,0 +1,376 @@
+================================================================================
+                  ALUMINI X - FIX VERIFICATION GUIDE
+                  Testing Mentorship Requests, Likes & Comments
+================================================================================
+
+STATUS: ✅ ALL FIXES APPLIED & SERVER RUNNING
+Server: http://localhost:5000
+
+================================================================================
+QUICK START - VERIFY FIXES WORK
+================================================================================
+
+⏱️  ESTIMATED TIME: 5-10 minutes to verify all fixes
+
+✅ Step 1: SERVER CHECK
+────────────────────────────────────────────────────────────────────────────
+[ ] Server is running at http://localhost:5000
+[ ] No error messages in terminal
+[ ] All systems operational
+
+✅ Step 2: STUDENT LOGIN
+────────────────────────────────────────────────────────────────────────────
+[ ] Go to http://localhost:5000/login.html
+[ ] Login with STUDENT account
+[ ] Successfully logged in and see student sidebar
+
+✅ Step 3: TEST MENTORSHIP REQUESTS
+────────────────────────────────────────────────────────────────────────────
+
+SENDING A REQUEST:
+[ ] Click "Find Mentors" in sidebar (or go to /directory.html)
+[ ] Browse and find an alumnus
+[ ] Click "Request Mentorship" button
+[ ] Fill in introduction message (at least 10 characters)
+[ ] Click "Send Request →"
+[ ] See toast: "✅ Mentorship request sent successfully!"
+[ ] Modal closes automatically
+[ ] Message field clears
+
+CHECKING SENT REQUEST:
+[ ] Click "Mentorship Requests" in sidebar
+[ ] Check "Sent by Me" tab
+[ ] See your request listed with status "pending"
+[ ] Message shows exactly what you typed
+[ ] Alumni name and company visible
+
+✅ Step 4: TEST LIKES
+────────────────────────────────────────────────────────────────────────────
+
+CREATE A POST:
+[ ] Click "Public Feed" in sidebar
+[ ] Click "Create Post" or "+ Create Post" button
+[ ] Fill in title (e.g., "My First Post")
+[ ] Fill in description (e.g., "This is a test post")
+[ ] Choose type (e.g., "Career Update")
+[ ] Click "Publish Post" button
+[ ] See toast: "✅ Post published successfully!"
+[ ] New post appears at top of feed
+
+LIKE YOUR POST:
+[ ] Switch to different account (or refresh and scroll down)
+[ ] Find a post from another user
+[ ] Count current likes (should be visible next to post)
+[ ] Click "👍 Like" button
+[ ] See toast: "👍 Post liked!"
+[ ] Refresh page (F5 or Ctrl+R)
+[ ] Like count increased by 1
+[ ] Like button still shows "👍 Like" (ready for another user)
+
+✅ Step 5: TEST COMMENTS
+────────────────────────────────────────────────────────────────────────────
+
+ADD A COMMENT:
+[ ] Find a post in Public Feed
+[ ] Look for comment count (💬 0 Comments)
+[ ] Click "💬 Comment" button
+[ ] Prompt box appears asking for comment
+[ ] Type a comment (e.g., "Great post!")
+[ ] Click "OK" or press Enter
+[ ] See toast: "💬 Comment added!"
+[ ] Comment count increases by 1
+[ ] Refresh page to verify persistence
+
+MULTIPLE COMMENTS:
+[ ] Add another comment to same post
+[ ] Comment count increases to 2
+[ ] Try adding on different posts
+
+✅ Step 6: ALUMNI VERIFY REQUEST
+────────────────────────────────────────────────────────────────────────────
+
+LOGIN AS ALUMNI:
+[ ] Logout from student account
+[ ] Login with ALUMNI account
+[ ] See alumni sidebar
+
+CHECK REQUESTS:
+[ ] Click "Mentorship Requests" in sidebar
+[ ] Check "Received from Students" tab
+[ ] See student request you sent earlier
+[ ] Student name and message visible
+
+ACCEPT/DECLINE:
+[ ] Click "Accept ✓" button
+[ ] Refresh page
+[ ] Status changes to "accepted"
+[ ] Try declining on another request if available
+[ ] Status changes to "declined"
+
+✅ Step 7: FINAL VERIFICATION
+────────────────────────────────────────────────────────────────────────────
+
+MENTORSHIP:
+[ ] Student sent request ✅
+[ ] Request appears in student's "Sent by Me" ✅
+[ ] Request appears in alumni's "Received from Students" ✅
+[ ] Alumni can accept ✅
+[ ] Alumni can decline ✅
+[ ] Status updates correctly ✅
+
+LIKES:
+[ ] Can like a post ✅
+[ ] Toast notification appears ✅
+[ ] Like count increases ✅
+[ ] Count persists after refresh ✅
+[ ] Cannot like same post twice (optional check) ✅
+
+COMMENTS:
+[ ] Can comment on post ✅
+[ ] Toast notification appears ✅
+[ ] Comment count increases ✅
+[ ] Count persists after refresh ✅
+[ ] Can comment multiple times ✅
+
+================================================================================
+WHAT TO DO IF SOMETHING DOESN'T WORK
+================================================================================
+
+Problem: "Mentorship request not sending"
+─────────────────────────────────────────
+Solution:
+1. Check console: Press F12 → Console tab
+2. Look for red error messages
+3. Check that you're logged in as a student
+4. Try again from Alumni Directory page
+5. Check server logs in terminal
+
+Problem: "Like button not working"
+──────────────────────────────────
+Solution:
+1. Refresh page (Ctrl+F5 for hard refresh)
+2. Check browser console for errors
+3. Make sure you're logged in
+4. Try clicking like on different post
+5. Check server logs for backend errors
+
+Problem: "Comment prompt doesn't appear"
+────────────────────────────────────────
+Solution:
+1. Check if browser blocks popups (check address bar)
+2. Try using different browser
+3. Refresh page and try again
+4. Check console for JavaScript errors
+5. Verify server is responding
+
+Problem: "Counts not updating after action"
+───────────────────────────────────────────
+Solution:
+1. Refresh page to reload data
+2. Wait 2-3 seconds before refreshing
+3. Check database connection
+4. Try logging out and back in
+5. Check server logs for errors
+
+General Troubleshooting:
+1. Open browser console: F12
+2. Go to Console tab
+3. Look for error messages (red text)
+4. Copy error and check logs
+5. Restart server: Ctrl+C then python app.py
+
+================================================================================
+DATABASE CHECKS (FOR ADMIN)
+================================================================================
+
+If you have access to Supabase dashboard, verify data is being stored:
+
+Posts Likes Table (posts_likes):
+- Should have new rows when you click like
+- Columns: id, post_id, user_id, created_at
+- Count: should match number of likes across all posts
+
+Posts Comments Table (posts_comments):
+- Should have new rows when you comment
+- Columns: id, post_id, user_id, comment_text, created_at
+- Shows all comments with user_id and text
+
+Mentorship Requests Table (mentorship_requests):
+- Should show pending requests
+- Columns: id, student_id, alumni_id, message, status, initiated_by, created_at
+- Status: pending, accepted, or declined
+
+Posts Table (posts):
+- Should show likes_count and comments_count updated
+- These values should match the counts in related tables
+
+================================================================================
+EXPECTED BEHAVIOR
+================================================================================
+
+MENTORSHIP REQUESTS:
+✓ Student can browse alumni
+✓ Student sends request with message
+✓ Message is stored with request
+✓ Alumni sees request in their requests page
+✓ Alumni can accept request (status → "accepted")
+✓ Alumni can decline request (status → "declined")
+✓ Accepted status persists after refresh
+✓ Declined status persists after refresh
+
+LIKES:
+✓ Only one like per user per post (duplicate prevention)
+✓ Like count shows on post
+✓ Like count increases immediately after click
+✓ Like count persists after page refresh
+✓ Like tooltip shows "Already liked" on retry (optional)
+✓ All users can see like count
+
+COMMENTS:
+✓ Can comment with text
+✓ Comment appears in count
+✓ Comment count increases
+✓ Comment count persists after refresh
+✓ Multiple comments on same post allowed
+✓ Comment text stored in database
+
+================================================================================
+SUCCESS CRITERIA - ALL ✅
+================================================================================
+
+✅ Mentorship request form submits without errors
+✅ Request appears in student's "Sent by Me" tab
+✅ Request appears in alumni's "Received" tab
+✅ Alumni can accept/decline request
+✅ Request status updates correctly
+✅ Status persists after page refresh
+
+✅ Like button clicks and sends action
+✅ Toast notification "👍 Post liked!" appears
+✅ Post like count increases by 1
+✅ Like count persists after refresh
+✅ Cannot like same post twice
+
+✅ Comment button opens prompt
+✅ Comment text is submitted
+✅ Toast notification "💬 Comment added!" appears
+✅ Post comment count increases by 1
+✅ Comment count persists after refresh
+✅ Can comment multiple times on same post
+
+================================================================================
+HOW TO REPORT ISSUES
+================================================================================
+
+If you find a problem:
+
+1. REPRODUCE THE ISSUE
+   - Write down exact steps to reproduce
+   - Note any error messages
+   - Check browser console (F12)
+
+2. COLLECT DEBUG INFO
+   - Browser console errors (F12 → Console)
+   - Server logs (look at terminal)
+   - Network requests (F12 → Network tab)
+   - Database state (if you can check)
+
+3. DOCUMENT FINDINGS
+   - What were you trying to do?
+   - What happened instead?
+   - What error message did you see?
+   - Screenshots/logs?
+
+4. TEST AGAIN
+   - Try with different accounts
+   - Try in private/incognito window
+   - Try hard refresh (Ctrl+F5)
+   - Try different browser
+
+================================================================================
+PERFORMANCE NOTES
+================================================================================
+
+Expected Performance:
+- Request submission: < 1 second
+- Like action: < 1 second
+- Comment submission: < 1 second
+- Page load: < 2 seconds
+- Like count update: Immediate
+- Comment count update: Immediate
+
+If slower:
+- Check internet connection
+- Check server logs
+- Try from different network
+- Restart server
+- Check browser cache
+
+================================================================================
+TESTING SCENARIOS
+================================================================================
+
+Scenario 1: Complete Mentorship Flow
+1. Login as Student A
+2. Send mentorship request to Alumni B
+3. Logout
+4. Login as Alumni B
+5. See request from Student A
+6. Accept request
+7. Status changes to accepted ✅
+
+Scenario 2: Multiple Likes
+1. Login as Student A
+2. Find post from Student B
+3. Like the post
+4. See like count +1
+5. Like post from Student C
+6. Logout
+7. Login as Student B
+8. Find post by A
+9. See like count is at least 1
+10. Post shows like information ✅
+
+Scenario 3: Comment Flow
+1. Login as User A
+2. Create post
+3. Logout
+4. Login as User B
+5. Find User A's post
+6. Add comment
+7. See comment count +1
+8. Logout
+9. Login as User A
+10. See comment count reflects new comment ✅
+
+================================================================================
+NEXT STEPS IF ALL TESTS PASS
+================================================================================
+
+✅ All tests passing?
+
+Next Steps:
+1. Congratulations! All fixes are working ✅
+2. Share with other users to test
+3. Monitor for any edge cases
+4. Check performance under normal use
+5. Document any issues found
+6. Consider enhancement requests
+
+Features now working:
+- Mentorship requests ✅
+- Likes ✅
+- Comments ✅
+- All with proper persistence ✅
+
+================================================================================
+ADDITIONAL RESOURCES
+================================================================================
+
+Full Documentation: COMPLETE_PROJECT_DOCUMENTATION.md
+Fix Details: FIXES_MENTORSHIP_LIKES_COMMENTS.md
+Status Report: FINAL_PROJECT_STATUS_REPORT.md
+
+Need help? Check the troubleshooting section above.
+
+================================================================================

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In - AlumniX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .login-body {
+            padding: 40px 30px;
+        }
+
+        .role-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #555;
+            text-align: center;
+        }
+
+        .role-info span {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px 13px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .forgot-link {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .forgot-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .forgot-link a:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .footer-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .signup-prompt {
+            text-align: center;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .signup-prompt a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-prompt a:hover {
+            text-decoration: underline;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .role-selector button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: #ffffff;
+            color: #3c4043;
+            border: 1.5px solid #dadce0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
+            margin-bottom: 18px;
+            font-family: inherit;
+        }
+
+        .google-btn:hover:not(:disabled) {
+            background: #f8f9fa;
+            border-color: #c2c7d0;
+            box-shadow: 0 2px 8px rgba(60, 64, 67, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .google-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .google-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 18px 0;
+            color: #70757a;
+            font-size: 12px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .auth-divider span {
+            padding: 0 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>AlumniX</h1>
+            <p>Welcome back</p>
+        </div>
+
+        <div class="login-body">
+            <div id="alert" class="alert"></div>
+
+            <div class="role-selector">
+                <button class="role-btn active" data-role="student">Student</button>
+                <button class="role-btn" data-role="alumni">Alumni</button>
+            </div>
+
+            <div class="role-info">
+                Logging in as <span id="roleText">Student</span>
+            </div>
+
+            <!-- Google Sign-In Button -->
+            <button type="button" class="google-btn" id="googleBtn">
+                <svg class="google-icon" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.79l7.97-6.2z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                <span id="googleBtnLabel">Continue with Google</span>
+            </button>
+
+            <div class="auth-divider">
+                <span>or log in with email</span>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="your@email.com" 
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Enter your password" 
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <div class="forgot-link">
+                    <a href="#">Forgot your password?</a>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Log In
+                </button>
+            </form>
+
+            <div class="footer-section">
+                <div class="signup-prompt">
+                    Don't have an account? <a href="signup.html">Sign up here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Official UMD build for Supabase JS v2 & Google Identity Services -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/post-auth-modal.js"></script>
+
+    <script>
+        // Wait for Supabase to be ready
+        async function waitForSupabase(maxAttempts = 15) {
+            for (let i = 0; i < maxAttempts; i++) {
+                if (window.supabaseClient && window.supabaseClient.auth) {
+                    console.log('[Login] ✅ Supabase client ready');
+                    return true;
+                }
+                if (typeof window.initializeSupabase === 'function') {
+                    window.initializeSupabase();
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            console.error('[Login] ❌ Supabase client not ready after waiting');
+            return false;
+        }
+
+        let selectedRole = 'student';
+
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedRole = btn.dataset.role;
+                document.getElementById('roleText').textContent = selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
+            });
+        });
+
+        function showAlert(msg, type = 'error') {
+            const alert = document.getElementById('alert');
+            if (!alert) return;
+            alert.textContent = msg;
+            alert.className = `alert show ${type}`;
+            if (type === 'success') {
+                setTimeout(() => alert.classList.remove('show'), 3000);
+            }
+        }
+
+        // Process verified Google user on login
+        async function processGoogleLogin(gUser) {
+            console.log('[Login Google] Processing user:', gUser);
+            const ready = await waitForSupabase();
+            if (!ready) {
+                showAlert('Supabase client not initialized. Please refresh.', 'error');
+                return;
+            }
+
+            try {
+                // Check if user exists in public.users
+                const { data: dbUser, error: checkErr } = await window.supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('email', gUser.email)
+                    .maybeSingle();
+
+                if (dbUser) {
+                    console.log('[Login Google] Existing user verified in database:', dbUser);
+                    
+                    // Check if department is missing - show modal to collect it
+                    if (!dbUser.department || dbUser.department === 'Computer Science & Engineering') {
+                        console.log('[Login Google] Department missing or default, showing modal');
+                        showAlert(`Welcome back, ${dbUser.full_name}! Let's verify your department...`, 'success');
+                        
+                        const userObj = {
+                            id: dbUser.id,
+                            email: dbUser.email,
+                            full_name: dbUser.full_name,
+                            name: dbUser.full_name
+                        };
+                        
+                        window.postAuthModal.show(userObj, dbUser.role || selectedRole);
+                        return;
+                    }
+
+                    showAlert(`Welcome back, ${dbUser.full_name}! Logging in...`, 'success');
+
+                    const sessionObj = {
+                        id: dbUser.id,
+                        email: dbUser.email,
+                        role: dbUser.role || selectedRole,
+                        full_name: dbUser.full_name,
+                        department: dbUser.department,
+                        institution: dbUser.institution || 'Karpagam Institute of Technology'
+                    };
+
+                    localStorage.setItem('alumnix_user_session', JSON.stringify(sessionObj));
+                    localStorage.setItem('alumnix_user', JSON.stringify(sessionObj));
+
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    showAlert('No account found with this Google email. Redirecting to signup...', 'info');
+                    setTimeout(() => {
+                        window.location.href = `signup.html?role=${selectedRole}`;
+                    }, 1200);
+                }
+            } catch (err) {
+                console.error('[Login Google Error]', err);
+                showAlert(err.message || 'Google login failed.', 'error');
+            }
+        }
+
+        // Initiate Google Sign-In via GIS / Supabase OAuth
+        async function initiateGoogleLogin() {
+            console.log('[Login] Initiating Google login');
+            const gBtn = document.getElementById('googleBtn');
+            const btnLabel = document.getElementById('googleBtnLabel');
+            gBtn.disabled = true;
+            btnLabel.textContent = 'Connecting Google...';
+
+            try {
+                const clientId = window.ALUMNIX_CONFIG?.GOOGLE_CLIENT_ID;
+                if (window.google && window.google.accounts && window.google.accounts.oauth2 && clientId) {
+                    const tokenClient = window.google.accounts.oauth2.initTokenClient({
+                        client_id: clientId,
+                        scope: 'email profile openid',
+                        callback: async (tokenResponse) => {
+                            gBtn.disabled = false;
+                            btnLabel.textContent = 'Continue with Google';
+
+                            if (tokenResponse && tokenResponse.access_token) {
+                                try {
+                                    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                                        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                                    });
+                                    const userInfo = await res.json();
+                                    if (userInfo && userInfo.email) {
+                                        await processGoogleLogin({
+                                            id: userInfo.sub,
+                                            email: userInfo.email,
+                                            name: userInfo.name || userInfo.email.split('@')[0],
+                                            picture: userInfo.picture || ''
+                                        });
+                                    }
+                                } catch (fetchErr) {
+                                    console.error('[Login Google] Error fetching userinfo:', fetchErr);
+                                    showAlert('Failed to retrieve Google profile info.', 'error');
+                                }
+                            } else if (tokenResponse.error) {
+                                showAlert(`Google sign in: ${tokenResponse.error}`, 'error');
+                            }
+                        }
+                    });
+                    tokenClient.requestAccessToken({ prompt: 'select_account' });
+                    return;
+                }
+
+                // Fallback to Supabase OAuth
+                const ready = await waitForSupabase();
+                if (ready) {
+                    const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: `${window.location.origin}/dashboard.html`
+                        }
+                    });
+                    if (error) throw error;
+                } else {
+                    throw new Error('Google Sign-In client is loading. Please try again.');
+                }
+            } catch (err) {
+                console.error('[Login Google Error]', err);
+                showAlert(err.message || 'Google login failed.', 'error');
+                gBtn.disabled = false;
+                btnLabel.textContent = 'Continue with Google';
+            }
+        }
+
+        document.getElementById('googleBtn')?.addEventListener('click', initiateGoogleLogin);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+
+            console.log('[Login] Attempting login:', { email, role: selectedRole });
+
+            if (!email || !password) {
+                showAlert('Please fill all fields', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Logging in...';
+
+            try {
+                // Ensure Supabase is ready
+                const ready = await waitForSupabase();
+                if (!ready) {
+                    throw new Error('Supabase not initialized. Please refresh the page.');
+                }
+
+                console.log('[Login] Calling Supabase auth.signInWithPassword');
+
+                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) {
+                    console.error('[Login] Auth error:', error);
+                    throw new Error(error.message);
+                }
+
+                if (!data || !data.user) {
+                    throw new Error('Login failed - no user returned');
+                }
+
+                console.log('[Login] ✅ Login successful:', data.user.id);
+
+                // Fetch user record from public.users if available
+                let fullName = data.user.user_metadata?.full_name || email.split('@')[0];
+                let userRole = data.user.user_metadata?.role || selectedRole;
+                let department = data.user.user_metadata?.department || 'Computer Science & Engineering';
+
+                try {
+                    const { data: dbUser } = await window.supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('id', data.user.id)
+                        .maybeSingle();
+
+                    if (dbUser) {
+                        fullName = dbUser.full_name || fullName;
+                        userRole = dbUser.role || userRole;
+                        department = dbUser.department || department;
+                    }
+                } catch (dbErr) {
+                    console.warn('[Login] Error fetching user profile:', dbErr);
+                }
+
+                const sessionObj = {
+                    id: data.user.id,
+                    email: data.user.email,
+                    role: userRole,
+                    full_name: fullName,
+                    department: department,
+                    institution: 'Karpagam Institute of Technology'
+                };
+
+                localStorage.setItem('alumnix_user_session', JSON.stringify(sessionObj));
+                localStorage.setItem('alumnix_user', JSON.stringify(sessionObj));
+
+                showAlert('Login successful! Redirecting...', 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+
+            } catch (err) {
+                console.error('[Login] Error:', err);
+                showAlert(err.message || 'Login failed. Check your credentials.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Log In';
+            }
+        });
+    </script>
+</body>
+</html>

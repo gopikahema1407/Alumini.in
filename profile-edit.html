@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - AlumniX</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .profile-edit-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .profile-picture-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 10px 0;
+            border: 3px solid #667eea;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-edit-container">
+        <h1>📝 Edit Your Profile</h1>
+        
+        <div class="success-message" id="successMsg">✅ Profile updated successfully!</div>
+        <div class="error-message" id="errorMsg"></div>
+
+        <div class="form-group">
+            <label>Profile Picture</label>
+            <input type="file" id="profilePicture" accept="image/*">
+            <img id="profilePreview" class="profile-picture-preview" style="display:none;">
+        </div>
+
+        <div class="form-group">
+            <label>Bio</label>
+            <textarea id="bio" placeholder="Tell us about yourself..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>LinkedIn Profile URL</label>
+            <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+        </div>
+
+        <div class="form-group">
+            <label>GitHub Profile URL</label>
+            <input type="url" id="github" placeholder="https://github.com/yourprofile">
+        </div>
+
+        <button class="btn-save" onclick="saveProfile()">Save Profile</button>
+        <button class="btn-save" style="background: #666; margin-top: 10px;" onclick="goBack()">Back</button>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+
+    <script>
+        let uploadedImageUrl = '';
+
+        // Load existing profile on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadExistingProfile();
+        });
+
+        // Handle file upload
+        document.getElementById('profilePicture').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadedImageUrl = event.target.result;
+                    document.getElementById('profilePreview').src = uploadedImageUrl;
+                    document.getElementById('profilePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function loadExistingProfile() {
+            const user = window.authService.getCurrentUser();
+            if (!user) {
+                alert('Please login first');
+                window.location.href = 'login.html';
+                return;
+            }
+            // Profile fields will be filled when user edits
+        }
+
+        function saveProfile() {
+            const user = window.authService.getCurrentUser();
+            
+            if (!user) {
+                showError('Please login first');
+                return;
+            }
+
+            const bio = document.getElementById('bio').value.trim();
+            const linkedin = document.getElementById('linkedin').value.trim();
+            const github = document.getElementById('github').value.trim();
+
+            if (!bio && !linkedin && !github && !uploadedImageUrl) {
+                showError('Please fill at least one field');
+                return;
+            }
+
+            // Disable button
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ Saving...';
+
+            window.apiClient.patch('/api/profile-update', {
+                user_id: user.id,
+                profile_picture_url: uploadedImageUrl || null,
+                linkedin_url: linkedin,
+                github_url: github,
+                bio: bio
+            }).then(response => {
+                if (response.success) {
+                    showSuccess('Profile updated successfully!');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showError('Error updating profile: ' + response.error);
+                }
+                btn.disabled = false;
+                btn.textContent = 'Save Profile';
+            }).catch(error => {
+                showError('Error: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Save Profile';
+            });
+        }
+
+        function showSuccess(msg) {
+            document.getElementById('successMsg').textContent = '✅ ' + msg;
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function showError(msg) {
+            document.getElementById('errorMsg').textContent = '❌ ' + msg;
+            document.getElementById('errorMsg').style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
