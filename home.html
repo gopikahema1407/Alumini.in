@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlumniX - Home</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .navbar-logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f2ff;
+        }
+
+        .btn-guest {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-guest:hover {
+            background: #e0e0e0;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+            border-color: #667eea;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .feature-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .cta-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            margin-top: 32px;
+        }
+
+        .cta-banner h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .cta-banner p {
+            font-size: 16px;
+            margin-bottom: 24px;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+        }
+
+        .btn-white:hover {
+            background: #f0f0f0;
+        }
+
+        .guest-notice {
+            background: #f0f7ff;
+            border: 1px solid #cce4ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #1a73e8;
+        }
+
+        .guest-notice strong {
+            color: #0d47a1;
+        }
+
+        .directory-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .alumni-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .alumni-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .alumni-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .alumni-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .logout-btn {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="home.html" class="navbar-logo">
+            🎓 AlumniX
+        </a>
+        <div class="navbar-buttons">
+            <div id="userSection" style="display: none;" class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Guest User</div>
+                    <div class="user-role" id="userRole">Guest</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div id="guestSection" class="navbar-buttons">
+                <a href="login.html" class="btn btn-secondary">Log in</a>
+                <a href="signup.html" class="btn btn-primary">Sign up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Guest Notice -->
+        <div id="guestNotice" class="guest-notice" style="display: none;">
+            <span>👤</span>
+            <div>
+                <strong>You're browsing as a guest.</strong> Create an account to connect with mentors and unlock exclusive features.
+            </div>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-title" id="welcomeTitle">Welcome to AlumniX</div>
+            <div class="welcome-subtitle" id="welcomeSubtitle">
+                Explore alumni profiles, job opportunities, and career guidance—no account required!
+            </div>
+        </div>
+
+        <!-- Main Features -->
+        <div>
+            <h2 class="section-title">Browse Freely</h2>
+            <div class="feature-grid">
+                <a href="directory.html" class="feature-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-title">Alumni Directory</div>
+                        <div class="feature-desc">Browse profiles of successful alumni across tech companies</div>
+                    </div>
+                </a>
+
+                <a href="jobs.html" class="feature-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">💼</div>
+                        <div class="feature-title">Job Board</div>
+                        <div class="feature-desc">View career opportunities posted by alumni</div>
+                    </div>
+                </a>
+
+                <a href="public-feed.html" class="feature-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">📰</div>
+                        <div class="feature-title">Community Posts</div>
+                        <div class="feature-desc">See what alumni and students are sharing</div>
+                    </div>
+                </a>
+
+                <a href="discover.html" class="feature-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <div class="feature-title">Discover Mentors</div>
+                        <div class="feature-desc">Find alumni mentors in your field of interest</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Member Features (Locked) -->
+        <div style="margin-top: 48px;">
+            <h2 class="section-title">Sign up to Unlock More</h2>
+            <div class="feature-grid">
+                <div class="feature-card" style="opacity: 0.7; cursor: not-allowed;">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">🔒 AI Matchmaker</div>
+                    <div class="feature-desc">Get matched with the perfect mentor using AI</div>
+                </div>
+
+                <div class="feature-card" style="opacity: 0.7; cursor: not-allowed;">
+                    <div class="feature-icon">💬</div>
+                    <div class="feature-title">🔒 Direct Messaging</div>
+                    <div class="feature-desc">Connect and chat with mentors privately</div>
+                </div>
+
+                <div class="feature-card" style="opacity: 0.7; cursor: not-allowed;">
+                    <div class="feature-icon">🗺️</div>
+                    <div class="feature-title">🔒 Career Roadmap</div>
+                    <div class="feature-desc">Get personalized career development paths</div>
+                </div>
+
+                <div class="feature-card" style="opacity: 0.7; cursor: not-allowed;">
+                    <div class="feature-icon">⭐</div>
+                    <div class="feature-title">🔒 Save Favorites</div>
+                    <div class="feature-desc">Bookmark profiles and jobs for later</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Banner -->
+        <div class="cta-banner">
+            <h2>Ready to take your career to the next level?</h2>
+            <p>Create a free account to unlock mentorship, career guidance, and exclusive opportunities.</p>
+            <div class="cta-buttons">
+                <a href="signup.html?role=student" class="btn btn-white">Join as Student</a>
+                <a href="signup.html?role=alumni" class="btn btn-white">Join as Alumni</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        // Check if user is logged in
+        function loadUserSession() {
+            const user = JSON.parse(localStorage.getItem('alumnix_user') || 'null');
+            const guestNotice = document.getElementById('guestNotice');
+            const userSection = document.getElementById('userSection');
+            const guestSection = document.getElementById('guestSection');
+            const welcomeTitle = document.getElementById('welcomeTitle');
+            const welcomeSubtitle = document.getElementById('welcomeSubtitle');
+
+            if (user) {
+                // User is logged in
+                document.getElementById('userName').textContent = user.full_name || user.email;
+                document.getElementById('userRole').textContent = user.role || 'Member';
+                userSection.style.display = 'flex';
+                guestSection.style.display = 'none';
+                guestNotice.style.display = 'none';
+                welcomeTitle.textContent = `Welcome back, ${user.full_name || 'User'}!`;
+                welcomeSubtitle.textContent = 'Continue exploring or head to your dashboard.';
+            } else {
+                // Guest user
+                guestNotice.style.display = 'flex';
+                userSection.style.display = 'none';
+                guestSection.style.display = 'flex';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('alumnix_user');
+            window.location.href = 'home.html';
+        }
+
+        loadUserSession();
+    </script>
+</body>
+</html>

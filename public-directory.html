@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Directory - AlumniX</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .navbar-logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .alumni-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .alumni-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .alumni-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+            border-color: #667eea;
+        }
+
+        .alumni-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 32px;
+        }
+
+        .alumni-name {
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .alumni-role {
+            font-size: 14px;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .alumni-company {
+            font-size: 13px;
+            text-align: center;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .alumni-info {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .alumni-badges {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            color: #555;
+        }
+
+        .badge.mentor {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .card-footer {
+            display: flex;
+            gap: 8px;
+        }
+
+        .card-footer a {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            background: #f0f0f0;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .card-footer a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: #999;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="home.html" class="navbar-logo">🎓 AlumniX</a>
+        <div class="navbar-buttons">
+            <a href="login.html" class="btn btn-secondary">Log in</a>
+            <a href="signup.html" class="btn btn-primary">Sign up</a>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container">
+        <div class="header">
+            <h1>Alumni Directory</h1>
+            <p>Browse successful alumni across top tech companies</p>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Department:</label>
+                <select id="deptFilter">
+                    <option value="">All Departments</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Civil">Civil</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Mentors:</label>
+                <select id="mentorFilter">
+                    <option value="">All</option>
+                    <option value="available">Available for Mentoring</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="alumni-grid" id="alumniGrid">
+            <!-- Alumni cards will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Sample alumni data - In production, fetch from API
+        const sampleAlumni = [
+            {
+                id: 1,
+                name: "Rahul Kumar",
+                role: "Senior Engineer",
+                company: "Zoho",
+                department: "Computer Science",
+                batch: 2018,
+                mentor: true,
+                avatar: "RK"
+            },
+            {
+                id: 2,
+                name: "Priya Singh",
+                role: "Product Manager",
+                company: "Microsoft",
+                department: "Computer Science",
+                batch: 2019,
+                mentor: true,
+                avatar: "PS"
+            },
+            {
+                id: 3,
+                name: "Arjun Patel",
+                role: "Full Stack Developer",
+                company: "Freshworks",
+                department: "Electronics",
+                batch: 2020,
+                mentor: false,
+                avatar: "AP"
+            },
+            {
+                id: 4,
+                name: "Neha Sharma",
+                role: "Data Scientist",
+                company: "Amazon",
+                department: "Computer Science",
+                batch: 2017,
+                mentor: true,
+                avatar: "NS"
+            }
+        ];
+
+        function renderAlumni(alumni) {
+            const grid = document.getElementById('alumniGrid');
+            
+            if (alumni.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <h2>No alumni found</h2>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = alumni.map(person => `
+                <div class="alumni-card">
+                    <div class="alumni-avatar">${person.avatar}</div>
+                    <div class="alumni-name">${person.name}</div>
+                    <div class="alumni-role">${person.role}</div>
+                    <div class="alumni-company">${person.company}</div>
+                    <div class="alumni-info">
+                        <div>${person.department}</div>
+                        <div>Batch ${person.batch}</div>
+                    </div>
+                    ${person.mentor ? '<div class="alumni-badges"><span class="badge mentor">✓ Mentor</span></div>' : ''}
+                    <div class="card-footer">
+                        <a href="signup.html?role=student">View Profile</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterAlumni() {
+            const dept = document.getElementById('deptFilter').value;
+            const mentor = document.getElementById('mentorFilter').value;
+
+            let filtered = sampleAlumni;
+
+            if (dept) {
+                filtered = filtered.filter(a => a.department === dept);
+            }
+
+            if (mentor === 'available') {
+                filtered = filtered.filter(a => a.mentor);
+            }
+
+            renderAlumni(filtered);
+        }
+
+        document.getElementById('deptFilter').addEventListener('change', filterAlumni);
+        document.getElementById('mentorFilter').addEventListener('change', filterAlumni);
+
+        // Initial render
+        renderAlumni(sampleAlumni);
+    </script>
+</body>
+</html>
