@@ -358,6 +358,7 @@
             alert.textContent = msg;
             alert.className = `alert show ${type}`;
             console.log(`[${type}]`, msg);
+            alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function switchRole(role) {
@@ -373,37 +374,48 @@
             tab.addEventListener('click', () => switchRole(tab.dataset.role));
         });
 
-        async function waitForSupabase(maxAttempts = 15) {
+        async function waitForSupabase(maxAttempts = 20) {
             for (let i = 0; i < maxAttempts; i++) {
                 if (window.supabaseClient && window.supabaseClient.auth) {
+                    console.log('[Signup] Supabase client ready');
                     return window.supabaseClient;
                 }
-                await new Promise(res => setTimeout(res, 100));
+                console.log(`[Signup] Waiting for Supabase... attempt ${i + 1}`);
+                await new Promise(res => setTimeout(res, 200));
             }
-            throw new Error('Supabase not ready');
+            throw new Error('Supabase client failed to initialize. Please refresh the page.');
         }
 
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Creating...';
+            btn.innerHTML = '<span class="spinner"></span> Creating account...';
 
             try {
                 const client = await waitForSupabase();
 
                 if (activeRole === 'student') {
                     const name = document.getElementById('studentName').value.trim();
-                    const email = document.getElementById('studentEmail').value.trim();
+                    const email = document.getElementById('studentEmail').value.trim().toLowerCase();
                     const dept = document.getElementById('studentDept').value;
                     const batch = document.getElementById('studentBatch').value;
                     const pass = document.getElementById('studentPass').value;
                     const passConfirm = document.getElementById('studentPassConfirm').value;
 
-                    if (!name || !email || !dept || !batch || !pass) throw new Error('Fill all fields');
-                    if (pass.length < 6) throw new Error('Password must be 6+ characters');
+                    // Validation
+                    if (!name) throw new Error('Please enter your full name');
+                    if (name.length < 3) throw new Error('Name must be at least 3 characters');
+                    if (!email) throw new Error('Please enter your email');
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Please enter a valid email');
+                    if (!dept || dept === '') throw new Error('Please select your department');
+                    if (!batch) throw new Error('Please enter your batch year');
+                    if (batch < 2000 || batch > 2030) throw new Error('Please enter a valid batch year');
+                    if (!pass) throw new Error('Please enter a password');
+                    if (pass.length < 6) throw new Error('Password must be at least 6 characters');
                     if (pass !== passConfirm) throw new Error('Passwords do not match');
 
+                    console.log('[Student Signup] Calling Supabase auth.signUp...');
                     const { data, error } = await client.auth.signUp({
                         email,
                         password: pass,
@@ -413,28 +425,43 @@
                                 role: 'student',
                                 department: dept,
                                 batch: batch
-                            }
+                            },
+                            emailRedirectTo: window.location.origin + '/login.html'
                         }
                     });
 
-                    if (error) throw error;
-                    if (!data.user) throw new Error('Signup failed');
+                    if (error) {
+                        console.error('[Student Signup] Error:', error);
+                        if (error.message.toLowerCase().includes('already registered')) {
+                            throw new Error('This email is already registered. Please log in or use a different email.');
+                        }
+                        throw new Error(error.message || 'Signup failed');
+                    }
+
+                    if (!data || !data.user) {
+                        throw new Error('Account creation failed. Please try again.');
+                    }
 
                     const userId = data.user.id;
-                    localStorage.setItem('alumnix_user', JSON.stringify({
+                    console.log('[Student Signup] ✅ Account created:', userId);
+
+                    const userData = {
                         id: userId,
                         email,
                         role: 'student',
                         full_name: name,
-                        department: dept
-                    }));
+                        department: dept,
+                        batch: batch
+                    };
 
-                    showAlert('Account created! Redirecting...', 'success');
-                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                    localStorage.setItem('alumnix_user', JSON.stringify(userData));
+                    
+                    showAlert('Account created successfully! Redirecting to dashboard...', 'success');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1500);
 
                 } else {
                     const name = document.getElementById('alumniName').value.trim();
-                    const email = document.getElementById('alumniEmail').value.trim();
+                    const email = document.getElementById('alumniEmail').value.trim().toLowerCase();
                     const dept = document.getElementById('alumniDept').value;
                     const year = document.getElementById('alumniYear').value;
                     const company = document.getElementById('alumniCompany').value.trim();
@@ -442,10 +469,21 @@
                     const pass = document.getElementById('alumniPass').value;
                     const passConfirm = document.getElementById('alumniPassConfirm').value;
 
-                    if (!name || !email || !dept || !year || !company || !title || !pass) throw new Error('Fill all fields');
-                    if (pass.length < 6) throw new Error('Password must be 6+ characters');
+                    // Validation
+                    if (!name) throw new Error('Please enter your full name');
+                    if (name.length < 3) throw new Error('Name must be at least 3 characters');
+                    if (!email) throw new Error('Please enter your email');
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Please enter a valid email');
+                    if (!dept || dept === '') throw new Error('Please select your department');
+                    if (!year) throw new Error('Please enter your graduation year');
+                    if (year < 1980 || year > 2026) throw new Error('Please enter a valid graduation year');
+                    if (!company) throw new Error('Please enter your company name');
+                    if (!title) throw new Error('Please enter your job title');
+                    if (!pass) throw new Error('Please enter a password');
+                    if (pass.length < 6) throw new Error('Password must be at least 6 characters');
                     if (pass !== passConfirm) throw new Error('Passwords do not match');
 
+                    console.log('[Alumni Signup] Calling Supabase auth.signUp...');
                     const { data, error } = await client.auth.signUp({
                         email,
                         password: pass,
@@ -457,40 +495,61 @@
                                 batch_year: year,
                                 company: company,
                                 job_role: title
-                            }
+                            },
+                            emailRedirectTo: window.location.origin + '/login.html'
                         }
                     });
 
-                    if (error) throw error;
-                    if (!data.user) throw new Error('Signup failed');
+                    if (error) {
+                        console.error('[Alumni Signup] Error:', error);
+                        if (error.message.toLowerCase().includes('already registered')) {
+                            throw new Error('This email is already registered. Please log in or use a different email.');
+                        }
+                        throw new Error(error.message || 'Signup failed');
+                    }
+
+                    if (!data || !data.user) {
+                        throw new Error('Account creation failed. Please try again.');
+                    }
 
                     const userId = data.user.id;
-                    localStorage.setItem('alumnix_user', JSON.stringify({
+                    console.log('[Alumni Signup] ✅ Account created:', userId);
+
+                    const userData = {
                         id: userId,
                         email,
                         role: 'alumni',
                         full_name: name,
                         department: dept,
+                        batch_year: year,
                         company: company,
                         job_role: title
-                    }));
+                    };
 
-                    showAlert('Account created! Redirecting...', 'success');
-                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                    localStorage.setItem('alumnix_user', JSON.stringify(userData));
+
+                    showAlert('Account created successfully! Redirecting to dashboard...', 'success');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1500);
                 }
 
             } catch (error) {
-                console.error('[Error]', error);
-                showAlert(error.message || 'Signup failed. Try again.', 'error');
+                console.error('[Signup Error]', error);
+                const errorMsg = error.message || 'Account creation failed. Please try again.';
+                showAlert(errorMsg, 'error');
                 btn.disabled = false;
                 btn.innerHTML = 'Create Account';
             }
         });
 
+        // Initialize on load
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => switchRole('student'));
+            document.addEventListener('DOMContentLoaded', () => {
+                switchRole('student');
+                console.log('[Signup] Page initialized');
+            });
         } else {
             switchRole('student');
+            console.log('[Signup] Page initialized');
         }
     </script>
 </body>

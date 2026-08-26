@@ -221,26 +221,34 @@
             alert.textContent = msg;
             alert.className = `alert show ${type}`;
             console.log(`[${type}]`, msg);
+            alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        async function waitForSupabase(maxAttempts = 15) {
+        async function waitForSupabase(maxAttempts = 20) {
             for (let i = 0; i < maxAttempts; i++) {
                 if (window.supabaseClient && window.supabaseClient.auth) {
+                    console.log('[Login] Supabase client ready');
                     return window.supabaseClient;
                 }
-                await new Promise(res => setTimeout(res, 100));
+                console.log(`[Login] Waiting for Supabase... attempt ${i + 1}`);
+                await new Promise(res => setTimeout(res, 200));
             }
-            throw new Error('Supabase not ready');
+            throw new Error('Supabase client failed to initialize. Please refresh the page.');
         }
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
             const btn = document.getElementById('loginBtn');
 
             if (!email || !password) {
-                showAlert('Please fill all fields', 'error');
+                showAlert('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showAlert('Please enter a valid email address', 'error');
                 return;
             }
 
@@ -249,30 +257,54 @@
 
             try {
                 const client = await waitForSupabase();
-                const { data, error } = await client.auth.signInWithPassword({ email, password });
+                console.log('[Login] Calling Supabase auth.signInWithPassword...');
 
-                if (error) throw error;
-                if (!data.user) throw new Error('Login failed');
+                const { data, error } = await client.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) {
+                    console.error('[Login] Auth error:', error);
+                    if (error.message.toLowerCase().includes('invalid login credentials')) {
+                        throw new Error('Invalid email or password');
+                    }
+                    throw new Error(error.message || 'Login failed');
+                }
+
+                if (!data || !data.user) {
+                    throw new Error('Login failed - no user data returned');
+                }
 
                 const user = data.user;
-                localStorage.setItem('alumnix_user', JSON.stringify({
+                console.log('[Login] ✅ Login successful:', user.id);
+
+                const userData = {
                     id: user.id,
                     email: user.email,
                     full_name: user.user_metadata?.full_name || email.split('@')[0],
                     role: user.user_metadata?.role || 'student',
-                    department: user.user_metadata?.department || 'Computer Science'
-                }));
+                    department: user.user_metadata?.department || 'Computer Science',
+                    batch: user.user_metadata?.batch || null,
+                    company: user.user_metadata?.company || null,
+                    job_role: user.user_metadata?.job_role || null
+                };
 
-                showAlert('Login successful! Redirecting...', 'success');
-                setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                localStorage.setItem('alumnix_user', JSON.stringify(userData));
+
+                showAlert('Login successful! Redirecting to dashboard...', 'success');
+                setTimeout(() => window.location.href = 'dashboard.html', 1500);
 
             } catch (error) {
-                console.error('[Error]', error);
-                showAlert(error.message || 'Login failed. Check your credentials.', 'error');
+                console.error('[Login Error]', error);
+                const errorMsg = error.message || 'Login failed. Please try again.';
+                showAlert(errorMsg, 'error');
                 btn.disabled = false;
                 btn.innerHTML = 'Log In';
             }
         });
+
+        console.log('[Login] Page initialized');
     </script>
 </body>
 </html>
