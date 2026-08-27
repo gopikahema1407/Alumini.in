@@ -178,6 +178,17 @@
     function checkAuth() {
       const user = localStorage.getItem('alumnix_user');
       if (!user) {
+        // Give newly signed up users a moment to redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        const newSignup = sessionStorage.getItem('alumnix_new_signup');
+        
+        if (newSignup) {
+          sessionStorage.removeItem('alumnix_new_signup');
+          console.log('[Dashboard] New signup user - allowing dashboard access');
+          return null;
+        }
+        
+        console.log('[Dashboard] No user found in localStorage, redirecting to home');
         window.location.href = 'home.html';
         return null;
       }

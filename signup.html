@@ -442,7 +442,7 @@
                                 department: dept,
                                 batch: batch
                             },
-                            emailRedirectTo: window.location.origin + '/login.html'
+                            emailRedirectTo: window.location.origin + '/dashboard.html'
                         }
                     });
 
@@ -461,6 +461,7 @@
                     const userId = data.user.id;
                     console.log('[Student Signup] ✅ Account created:', userId);
 
+                    // Store user data in localStorage for immediate dashboard access
                     const userData = {
                         id: userId,
                         email,
@@ -471,6 +472,24 @@
                     };
 
                     localStorage.setItem('alumnix_user', JSON.stringify(userData));
+                    sessionStorage.setItem('alumnix_new_signup', 'true');
+                    
+                    // Try to sign in immediately to create a session
+                    console.log('[Student Signup] Attempting immediate sign-in...');
+                    try {
+                        const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+                            email,
+                            password: pass
+                        });
+                        
+                        if (signInError) {
+                            console.warn('[Student Signup] Immediate sign-in failed (user may need email confirmation):', signInError.message);
+                        } else if (signInData?.session) {
+                            console.log('[Student Signup] ✅ Session created successfully');
+                        }
+                    } catch (signInErr) {
+                        console.warn('[Student Signup] Sign-in exception:', signInErr.message);
+                    }
                     
                     showAlert('Account created successfully! Redirecting to dashboard...', 'success');
                     setTimeout(() => window.location.href = 'dashboard.html', 1500);
@@ -512,7 +531,7 @@
                                 company: company,
                                 job_role: title
                             },
-                            emailRedirectTo: window.location.origin + '/login.html'
+                            emailRedirectTo: window.location.origin + '/dashboard.html'
                         }
                     });
 
@@ -543,6 +562,24 @@
                     };
 
                     localStorage.setItem('alumnix_user', JSON.stringify(userData));
+                    sessionStorage.setItem('alumnix_new_signup', 'true');
+
+                    // Try to sign in immediately to create a session
+                    console.log('[Alumni Signup] Attempting immediate sign-in...');
+                    try {
+                        const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+                            email,
+                            password: pass
+                        });
+                        
+                        if (signInError) {
+                            console.warn('[Alumni Signup] Immediate sign-in failed (user may need email confirmation):', signInError.message);
+                        } else if (signInData?.session) {
+                            console.log('[Alumni Signup] ✅ Session created successfully');
+                        }
+                    } catch (signInErr) {
+                        console.warn('[Alumni Signup] Sign-in exception:', signInErr.message);
+                    }
 
                     showAlert('Account created successfully! Redirecting to dashboard...', 'success');
                     setTimeout(() => window.location.href = 'dashboard.html', 1500);
