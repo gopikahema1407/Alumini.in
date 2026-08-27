@@ -353,6 +353,45 @@
                 btn.innerHTML = '🔗 Continue with Google';
             }
         });
+
+        // Initialize on page load - check if redirected from signup
+        window.addEventListener('DOMContentLoaded', () => {
+            const loginEmail = sessionStorage.getItem('loginEmail');
+            if (loginEmail) {
+                console.log('[Login] Pre-filling email from signup redirect:', loginEmail);
+                document.getElementById('email').value = loginEmail;
+                sessionStorage.removeItem('loginEmail'); // Clear after use
+                
+                // Focus on password field for better UX
+                document.getElementById('password').focus();
+                
+                // Show hint message
+                showAlert('Email found! Please enter your password to sign in.', 'success');
+            }
+        });
+
+        // Also handle if page is already loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const loginEmail = sessionStorage.getItem('loginEmail');
+                if (loginEmail) {
+                    document.getElementById('email').value = loginEmail;
+                    sessionStorage.removeItem('loginEmail');
+                    document.getElementById('password').focus();
+                    showAlert('Email found! Please enter your password to sign in.', 'success');
+                }
+            });
+        } else {
+            // Page already loaded
+            const loginEmail = sessionStorage.getItem('loginEmail');
+            if (loginEmail) {
+                console.log('[Login] Pre-filling email from signup redirect:', loginEmail);
+                document.getElementById('email').value = loginEmail;
+                sessionStorage.removeItem('loginEmail');
+                document.getElementById('password').focus();
+                showAlert('Email found! Please enter your password to sign in.', 'success');
+            }
+        }
     </script>
 </body>
 </html>

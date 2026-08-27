@@ -449,7 +449,12 @@
                     if (error) {
                         console.error('[Student Signup] Error:', error);
                         if (error.message.toLowerCase().includes('already registered')) {
-                            throw new Error('This email is already registered. Please log in or use a different email.');
+                            // Email already exists - redirect to login with email pre-filled
+                            console.log('[Student Signup] Email already registered, redirecting to login...');
+                            sessionStorage.setItem('loginEmail', email);
+                            showAlert('This email is already registered. Redirecting to login...', 'success');
+                            setTimeout(() => window.location.href = 'login.html', 1500);
+                            return;
                         }
                         throw new Error(error.message || 'Signup failed');
                     }
@@ -538,7 +543,12 @@
                     if (error) {
                         console.error('[Alumni Signup] Error:', error);
                         if (error.message.toLowerCase().includes('already registered')) {
-                            throw new Error('This email is already registered. Please log in or use a different email.');
+                            // Email already exists - redirect to login with email pre-filled
+                            console.log('[Alumni Signup] Email already registered, redirecting to login...');
+                            sessionStorage.setItem('loginEmail', email);
+                            showAlert('This email is already registered. Redirecting to login...', 'success');
+                            setTimeout(() => window.location.href = 'login.html', 1500);
+                            return;
                         }
                         throw new Error(error.message || 'Signup failed');
                     }
@@ -588,9 +598,36 @@
             } catch (error) {
                 console.error('[Signup Error]', error);
                 const errorMsg = error.message || 'Account creation failed. Please try again.';
-                showAlert(errorMsg, 'error');
-                btn.disabled = false;
-                btn.innerHTML = 'Create Account';
+                
+                // Check if it's an "already registered" error
+                if (errorMsg.toLowerCase().includes('already registered')) {
+                    showAlert(errorMsg + ' Click "Sign In Instead" button below.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Create Account';
+                    
+                    // Show a button to go to login page
+                    setTimeout(() => {
+                        const alert = document.getElementById('alert');
+                        if (!alert.querySelector('button')) {
+                            const loginBtn = document.createElement('button');
+                            loginBtn.type = 'button';
+                            loginBtn.textContent = '→ Sign In Instead';
+                            loginBtn.style.cssText = 'margin-top: 12px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;';
+                            loginBtn.addEventListener('click', () => {
+                                const email = activeRole === 'student' 
+                                    ? document.getElementById('studentEmail').value 
+                                    : document.getElementById('alumniEmail').value;
+                                sessionStorage.setItem('loginEmail', email.trim().toLowerCase());
+                                window.location.href = 'login.html';
+                            });
+                            alert.appendChild(loginBtn);
+                        }
+                    }, 100);
+                } else {
+                    showAlert(errorMsg, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Create Account';
+                }
             }
         });
 
